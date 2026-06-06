@@ -61,7 +61,7 @@ class DefaultDataRepository(
     // 2. Le inyectamos el cliente corregido al constructor de Retrofit
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.pastes.dev/")
-        .client(okHttpClient) // <--- Esta línea aplica el limpiador de texto automáticamente
+        .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
@@ -69,8 +69,6 @@ class DefaultDataRepository(
 
     private val _isOfflineFlow = MutableStateFlow(false)
     override val isOfflineFlow: StateFlow<Boolean> = _isOfflineFlow.asStateFlow()
-
-    // Expose cached events mapped to domain model
     override val events: Flow<List<Event>> = eventDao.getCachedEventsFlow().map { cachedList ->
         cachedList.map { cached ->
             Event(
@@ -87,8 +85,6 @@ class DefaultDataRepository(
             )
         }
     }
-
-    // Expose favorites as a Set for fast check
     override val favoriteEventIds: Flow<Set<String>> = eventDao.getFavorites().map { list ->
         list.map { it.eventId }.toSet()
     }
@@ -96,10 +92,7 @@ class DefaultDataRepository(
     override suspend fun refreshEvents() {
         withContext(Dispatchers.IO) {
             try {
-                // Fetch from network
                 val networkEvents = eventService.getEvents()
-
-                // Map to cached entity list
                 val cachedEntities = networkEvents.map { event ->
                     CachedEventEntity(
                         id = event.id,
@@ -115,15 +108,13 @@ class DefaultDataRepository(
                     )
                 }
 
-                // Update local cache
+
                 eventDao.clearCachedEvents()
                 eventDao.insertCachedEvents(cachedEntities)
 
                 // Emit offline = false
                 _isOfflineFlow.value = false
             } catch (e: Exception) {
-                // Intercept the exception and fall back to local cached events
-                // Notify UI of offline mode
                 _isOfflineFlow.value = true
             }
         }

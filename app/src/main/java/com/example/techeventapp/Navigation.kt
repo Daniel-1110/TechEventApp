@@ -25,7 +25,6 @@ fun MainNavigation(
     val catalogViewModel: CatalogViewModel = viewModel { CatalogViewModel(repository) }
 
     if (isExpanded) {
-        // Expanded layout: List-Detail split screen
         ListDetailScreen(
             catalogViewModel = catalogViewModel,
             detailViewModelFactory = { eventId -> DetailViewModel(repository, eventId) },
@@ -34,7 +33,6 @@ fun MainNavigation(
             modifier = modifier
         )
     } else {
-        // Compact layout: Sequential screens navigation
         val backStack = rememberNavBackStack(Catalog)
 
         NavDisplay(

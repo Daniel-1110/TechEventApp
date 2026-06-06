@@ -147,7 +147,6 @@ fun EventDetailContent(
             }
         }
 
-        // Location
         item {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -193,7 +192,6 @@ fun EventDetailContent(
             )
         }
 
-        // Speakers Title
         item {
             Text(
                 text = "Ponentes",
@@ -202,7 +200,6 @@ fun EventDetailContent(
             )
         }
 
-        // Speakers Items
         items(event.speakers.size) { index ->
             val speaker = event.speakers[index]
             Card(
@@ -224,7 +221,6 @@ fun EventDetailContent(
             }
         }
 
-        // Agenda Title (CORREGIDO: Ahora dentro de un bloque item)
         item {
             Text(
                 text = "Agenda del día",
